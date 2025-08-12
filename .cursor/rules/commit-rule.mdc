@@ -1,0 +1,66 @@
+---
+description: 
+globs: []
+alwaysApply: false
+---
+
+Write commit message in Korean.
+Avoid overly verbose descriptions or unnecessary details.
+
+# 커밋 메시지 작성 프롬프트
+
+다음 형식에 따라 커밋 메시지를 작성해주세요:
+
+```
+<타입>[범위(optional)]: <설명>
+
+[본문(optional)]
+
+[꼬리말(optional)]
+```
+
+## 타입 (Required)
+
+커밋 타입은 다음 중 하나를 선택하여 작성해주세요:
+
+- refactor: 코드 리팩토링
+- feat: 새로운 기능 추가, 기존 기능 변경, API 변경
+- style: 코드 변경이 없는 케이스 (포맷팅, 세미콜론 누락 등)
+- fix: 버그 수정
+- test: 디버깅용 테스트 코드 추가 또는 수정
+- chore: package 관련 수정
+- perf: 성능 개선
+- build: 빌드 관련 수정
+- docs: 문서 수정
+- rename: 파일명, 폴더명 수정 또는 이동
+- remove: 파일 삭제
+
+## 범위 (Optional)
+
+범위는 변경된 컴포넌트나 파일의 패지키를 명시할 때 사용합니다.
+
+예: `feat(web):`, `fix(api):`, `chore(config):`
+
+## 설명 (Required)
+
+설명은 명령문 형태로 작성하고 마침표를 붙이지 않습니다.
+간결하면서도 변경사항을 명확하게 설명합니다.
+
+## 본문 (Optional)
+
+변경사항에 대한 상세 설명을 작성합니다.
+각 항목은 하이픈(-)으로 시작하고 각 항목은 새 줄에 작성합니다.
+
+## 꼬리말 (Optional)
+
+관련 이슈나 작업 항목을 참조합니다.
+예: `Resolves: #123`, `Fixes: #456`, `Related to: #789`
+
+## 작성 예시
+
+```
+refactor: extract date utilities
+
+- move duplicated date handling functions to utils/date.js
+- rename functions for clarity
+```
