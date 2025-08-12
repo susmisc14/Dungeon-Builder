@@ -13,6 +13,7 @@
     "turbo": "^2.5.5",
     "typescript": "5.8.3"
   },
+  "prettier": "@repo/config-prettier",
   "packageManager": "pnpm@9.0.0",
   "engines": {
     "node": ">=18"

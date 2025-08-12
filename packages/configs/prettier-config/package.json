@@ -1,0 +1,13 @@
+{
+  "name": "@repo/config-prettier",
+  "version": "0.0.0",
+  "private": true,
+  "main": "index.cjs",
+  "peerDependencies": {
+    "prettier": ">=3"
+  },
+  "dependencies": {
+    "@trivago/prettier-plugin-sort-imports": "^4.3.0",
+    "prettier-plugin-tailwindcss": "^0.5.14"
+  }
+}
