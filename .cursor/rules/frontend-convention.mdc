@@ -1,0 +1,170 @@
+---
+alwaysApply: true
+---
+
+# Frontend Engineering Conventions (Merged)
+
+This document merges and reconciles two rule sets into a single, opinionated guideline. When rules conflicted, we chose the option that best improves readability, predictability, testability, and long-term maintainability.
+
+## 1) Naming and File Structure
+
+- **File names**
+  - Default: the filename should match the `export default` symbol.
+  - React components: use PascalCase (e.g., `UserCard.tsx`).
+  - Files with multiple exports: use camelCase (e.g., `dataLoader.ts`).
+  - Directories: use kebab-case (e.g., `user-profile`, `game-editor`).
+
+- **Enums**
+  - Enum names and values use UPPER_SNAKE_CASE for clarity and consistency.
+  - Example:
+    ```typescript
+    export enum ERequestStatus {
+      PENDING = "PENDING",
+      SUCCESS = "SUCCESS",
+      FAILURE = "FAILURE",
+    }
+    ```
+
+- **Barrel files (`index` files)**
+  - Only re-export. Do not declare logic, imports with side effects, or variables.
+  - Example (good):
+    ```typescript
+    export * from "./editor";
+    export * from "./renderer";
+    ```
+
+## 2) Functions and Event Handlers
+
+- **Named functions only**
+  - Avoid anonymous functions. Named functions improve stack traces, profiling, and debugging.
+
+- **Event handler naming**
+  - Prefix internal event handlers with `handle*` (e.g., `handleClick`).
+  - Public callback props use `on*` (e.g., `onClick`). Match `handleX` to `onX`.
+
+- **Event object scope**
+  - Reference the event object only inside the handler. Extract primitives and pass those to business logic.
+
+## 3) TypeScript Practices
+
+- **Prefer `type` aliases by default**
+  - Use `interface` only when you need features `type` cannot provide (e.g., declaration merging or self-referencing generic constraints).
+
+- **Type and interface naming**
+  - Use PascalCase. Distinguish with `T`-prefix for types and `I`-prefix for interfaces where helpful for clarity (e.g., `TUser`, `IService`).
+
+- **Restricted constructs**
+  - Avoid `as`, `any`, and non-null assertion (`!`). If an exception is unavoidable, include a short comment explaining why and how the risk is constrained.
+
+## 4) React Component Rules
+
+- **Keep logic out of components**
+  - Components are presentation. Extract business logic into hooks or utilities. This increases reusability and test coverage.
+
+- **Encapsulate primitive hooks**
+  - Wrap `useState`, `useEffect`, etc., in custom hooks where it improves cohesion and reuse.
+
+- **Conditional rendering**
+  - Split substantially different UI/logic paths into separate components instead of deep conditionals.
+
+## 5) Readability
+
+- **Eliminate magic numbers**
+  - Replace with named constants colocated near the logic they parameterize.
+
+- **Simplify complex conditionals**
+  - Prefer `if`/`else`, small helper variables, or an IIFE-return block over nested ternaries.
+
+- **Reduce eye movement**
+  - Colocate simple, localized logic with its usage. Keep policies close to render logic when it clarifies intent.
+
+- **Name complex boolean conditions**
+  - Assign meaningful variables to multi-part conditions to reveal intent.
+
+## 6) Predictability
+
+- **Standardize return shapes**
+  - Functions and hooks in the same family should return consistent shapes (e.g., React Query hooks return the Query object).
+
+- **No hidden side effects**
+  - Function names and signatures should reflect what they do. Separate logging, state updates, and network calls unless they are the explicit responsibility of the function.
+
+- **Unique, descriptive names**
+  - Prefer names that reveal cross-cutting concerns (e.g., `getWithAuth`) instead of ambiguous wrappers.
+
+## 7) Cohesion
+
+- **Form cohesion**
+  - Choose field-level validation for independent fields or async checks; choose form-level schema when fields are interdependent or part of a flow.
+
+- **Organize by feature/domain**
+  - Prefer domain-first directory structure. Keep components, hooks, and utilities for a feature close together.
+
+- **Relate constants to logic**
+  - Keep constants near the logic they influence, or name them clearly to reflect the relationship.
+
+## 8) Coupling
+
+- **Avoid premature abstraction**
+  - Duplicate small pieces initially if use cases may diverge. Abstract only when behavior is demonstrably stable and shared.
+
+- **Scope state thoughtfully**
+  - Create focused hooks/contexts for narrow concerns to prevent unnecessary re-renders and broad dependencies.
+
+- **Composition over props drilling**
+  - Favor component composition to keep data flow localized and reduce intermediate dependencies.
+
+## 9) Boolean Naming
+
+- **Avoid verb prefixes like `is*`, `has*`, `can*` for booleans**
+  - Reserve verbs for functions. Prefer concise noun/adjective phrases (e.g., `enabled`, `visible`, `valid`). If naming becomes unclear, extract a function.
+
+## 10) Selected Examples
+
+- Magic number as a named constant:
+
+  ```typescript
+  const ANIMATION_DELAY_MS = 300;
+
+  async function handleLike() {
+    await postLike(url);
+    await delay(ANIMATION_DELAY_MS);
+    await refetchPostLike();
+  }
+  ```
+
+- Event object confined to handler:
+
+  ```tsx
+  function handleMoveStart(event: DragStartEvent) {
+    const draggingIds = event.active.data.current?.location?.blockIds ?? [];
+    deselectNonDraggingBlocks(draggingIds);
+  }
+
+  function deselectNonDraggingBlocks(draggingIds: string[]) {
+    // ... business logic using primitives only
+  }
+  ```
+
+- Barrel file re-exports only:
+
+  ```typescript
+  // index.ts
+  export * from "./components";
+  export * from "./hooks";
+  ```
+
+- Consistent hook return shape (React Query):
+
+  ```typescript
+  import { type UseQueryResult, useQuery } from "@tanstack/react-query";
+
+  export function useUser(): UseQueryResult<User, Error> {
+    const query = useQuery({ queryKey: ["user"], queryFn: fetchUser });
+    return query;
+  }
+  ```
+
+---
+
+These conventions are intentionally prescriptive. When a case is not covered, choose the option that improves clarity and reduces coupling. If a rule becomes counterproductive for a specific scenario, document the exception and the reasoning.
